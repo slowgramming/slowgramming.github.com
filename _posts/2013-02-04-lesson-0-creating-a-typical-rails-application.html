@@ -12,11 +12,11 @@ meta:
   cyberchimps_slider_hidetitle: '1'
   cyberchimps_slider_hidecaption: '1'
 ---
-<p lang="en">Abul Ala was born in Maʿarra, Syria. He was a member of the <i>Banu Sulayman</i>, a notable family of Maʿarra, belonging to the larger Tanukh tribe. His paternal great-great-grandfather had been the city's first qadi. Some members of the <i>Bany Sulayman</i> had also been noted as good poets. He lost his eyesight at the age of four due to smallpox.<sup id="cite_ref-3">
+<p lang="en">Abul Ala was born in  Ma  arra,  Syria. He was a member of the  <i>Banu Sulayman</i>, a notable family of Ma  arra, belonging to the larger  Tanukh  tribe. His paternal great-great-grandfather had been the city's first  qadi. Some members of the  <i>Bany Sulayman</i>  had also been noted as good poets. He lost his eyesight at the age of four due to  smallpox.<sup id="cite_ref-3">
 </sup></p>
-<p id="firstHeading" lang="en">Al-Maʿarri was a controversial rationalist of his time, attacking the dogmas of religion rejecting the claim that Islam or any other religion possessed the truths they claim and considered the speech of prophets as a lie (literally, "forge") and (some of it) "impossible" to be true. He was equally sarcastic towards the religions of Muslims, Jews, and Christians. He was also a vegan who argued for animal rights.</p>
-<p lang="en"><i>Soften your tread. Methinks the earth’s surface is but bodies of the dead,</i>
-<i>Walk slowly in the air, so you do not trample on the remains of God’s servants.</i></p>
+<p id="firstHeading" lang="en">Al-Ma  arri  was a controversial  rationalist  of his time, attacking the dogmas of  religion  rejecting the claim that  Islam  or any other religion possessed the truths they claim and considered the speech of prophets as a lie (literally, "forge") and (some of it) "impossible" to be true. He was equally sarcastic towards the religions of Muslims, Jews, and Christians. He was also a vegan who argued for animal rights.</p>
+<p lang="en"><i>Soften your tread. Methinks the earth   s surface is but bodies of the dead,</i>
+<i>Walk slowly in the air, so you do not trample on the remains of God   s servants.</i></p>
 <!--more-->
 
 If you are very familiar with using Rails, you can probably skip this lesson. This section details how we might have setup a Rails application in the past. In later lessons we'll strip out much of the functionality and replace it with AngularJS components.
@@ -25,10 +25,10 @@ Let's generate a simple Rails application. This application will be demonstrate 
 
 Please read the <a title="Prerequisites for the AngularJS and Rails Tutorials" href="http://slowgramming.com/angularjs-rails/prerequisites-angularjs-and-rails/">prerequisites section</a> if you don't have Ruby and/or Rails installed yet.
 
-This entire application is available on GitHub here: <a href="https://github.com/xrd/Slowgramming-Angular-Rails">https://github.com/xrd/Slowgramming-Angular-Rails</a>. You can compare your code to this if you find you have a mistake preventing you from proceeding. You'll notice links in this tutorial to the files as they appear within the GitHub repository, so you can verify your code with a guaranteed working version from the repository. There are two "branches" on the repository, one for the typical application, and another for the version after it has been converted to use AngularJS. Make sure you are on the "master" branch (which is the default).
+This entire application is available on GitHub here: <a href="https://github.com/xrd/Slowgramming-Angular-Rails">https://github.com/xrd/Slowgramming-Angular-Rails</a>.  You can compare your code to this if you find you have a mistake preventing you from proceeding. You'll notice links in this tutorial to the files as they appear within the GitHub repository, so you can verify your code with a guaranteed working version from the repository.  There are two "branches" on the repository, one for the typical application, and another for the version after it has been converted to use AngularJS. Make sure you are on the "master" branch (which is the default).
 
 First, create a new Rails application. From a terminal window do this:
-<pre>rails new AngularRails 
+<pre>rails new AngularRails  
 cd AngularRails</pre>
 Once you have completed those two steps, you'll want to start editing the files. Using your editor, open the <a href="https://github.com/xrd/Slowgramming-Angular-Rails/blob/master/Gemfile">Gemfile</a>, and add these lines to the end of it.
 <pre>gem 'omniauth'
@@ -78,7 +78,7 @@ Then, add a file called <a href="https://github.com/xrd/Slowgramming-Angular-Rai
 FACEBOOK_APP_SECRET: eeeeeeeeeeeeeeeeeeffffffffffffff</pre>
 You will want to replace the codes there with the codes from an actual Facebook application you will create.
 
-To create the Facebook application, go to <a href="https://developers.facebook.com/">https://developers.facebook.com/</a>. You may need to setup a developer account if you have not done so already. Click on the "Apps" tab at the top of the page.
+To create the Facebook application, go to  <a href="https://developers.facebook.com/">https://developers.facebook.com/</a>. You may need to setup a developer account if you have not done so already. Click on the "Apps" tab at the top of the page.
 
 <a class="thumbnail" href="http://slowgramming.com/wp-content/uploads/2013/02/Screen-Shot-2013-02-06-at-3.08.36-PM.png"><img class="size-medium wp-image-77 alignleft" alt="Screen Shot 2013-02-06 at 3.08.36 PM" src="http://slowgramming.com/wp-content/uploads/2013/02/Screen-Shot-2013-02-06-at-3.08.36-PM-300x69.png" width="300" height="69" /></a>
 
@@ -121,7 +121,7 @@ Add this to a file called app/controllers/welcome_controller.rb
  def index
  end 
 end</pre>
-Then, create a directory called "welcome" inside the app/views directory, and add a file with these contents to <a href="https://github.com/xrd/Slowgramming-Angular-Rails/blob/master/app/views/welcome/index.html.haml">app/views/welcome/index.html.haml</a> with this little snippet.
+Then, create a directory called "welcome" inside the app/views directory, and add a file with these contents to <a href="https://github.com/xrd/Slowgramming-Angular-Rails/blob/master/app/views/welcome/index.html.haml">app/views/welcome/index.html.haml</a>  with this little snippet.
 <pre>%h1 Hello from AngularJS and Rails.</pre>
 And, add this file to <a href="https://github.com/xrd/Slowgramming-Angular-Rails/blob/master/public/login.html">public/login.html</a>
 <pre>&lt;html&gt;&lt;body&gt;
@@ -138,7 +138,7 @@ If you click "Go to App" you'll get an error because we have not done anything w
 Once omniauth completes its work with Facebook, it redirects back to a similar path on the application with "callback" appended. So, the route /auth/facebook returns to your app with /auth/facebook/callback. We need to setup a route to handle this request and then build a controller that can use this.
 
 Add these lines to the top of your <a href="https://github.com/xrd/Slowgramming-Angular-Rails/blob/master/config/routes.rb">config/routes.rb</a> file
-<pre>  match '/auth/:provider/callback', to: 'authentication#create'
+<pre>   match '/auth/:provider/callback', to: 'authentication#create'
   match '/auth/failure', to: 'authentication#failure'</pre>
 Then, add this file to <a href="https://github.com/xrd/Slowgramming-Angular-Rails/blob/2e71c0f3941da70158435e6924ac68a17eba497f/app/controllers/authentication_controller.rb">app/controllers/authentication_controller.rb</a>
 <pre>class AuthenticationController &lt; ApplicationController
@@ -180,7 +180,7 @@ Then, modify your <a href="https://github.com/xrd/Slowgramming-Angular-Rails/blo
  end
  redirect_to root_path 
 end</pre>
-This code will take the information provided from Omniauth (originally from Facebook) and stick it into the database. Now, if you hit the login link you should  see this:
+This code will take the information provided from Omniauth (originally from Facebook) and stick it into the database. Now, if you hit the login link you should   see this:
 
 <a class="thumbnail" href="http://slowgramming.com/wp-content/uploads/2013/02/Screen-Shot-2013-02-06-at-4.42.16-PM.png"><img class="size-medium wp-image-88 alignright" alt="Screen Shot 2013-02-06 at 4.42.16 PM" src="http://slowgramming.com/wp-content/uploads/2013/02/Screen-Shot-2013-02-06-at-4.42.16-PM-300x73.png" width="300" height="73" /></a>
 
@@ -205,7 +205,7 @@ echo "gem 'faker', group: :development" &gt;&gt; Gemfile
 bundle</pre>
 This will generate our posts and revisions models and add the faker gem (which can be used to generate fake data for us to play with).
 
-Add this file <a href="https://github.com/xrd/Slowgramming-Angular-Rails/blob/7b43348179a4479bacddfe3f713e059df155670b/lib/tasks/fake.rake">lib/tasks/fake.rake</a> to generate some fake data to play with:
+Add this file  <a href="https://github.com/xrd/Slowgramming-Angular-Rails/blob/7b43348179a4479bacddfe3f713e059df155670b/lib/tasks/fake.rake">lib/tasks/fake.rake</a>  to generate some fake data to play with:
 <pre>namespace :angularrails do
  desc "Build fake data"
  task :fakeit =&gt; :environment do
