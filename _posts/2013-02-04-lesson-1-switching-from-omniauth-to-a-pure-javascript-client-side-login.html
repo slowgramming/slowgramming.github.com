@@ -1,0 +1,66 @@
+---
+layout: post
+title: ! 'Lesson 1: Switching from omniauth to a pure JavaScript (client-side) login'
+tags:
+- angularjs-rails
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '1'
+---
+As a long time Rails developer, omniauth has a special place in my heart. User authentication and authorization is something you have to do for almost every application. And, I personally find storing user credentials to be dangerous. How many successful password crack attacks do we have to experience before we realize that storing usernames and passwords on another server is a poor way to ask people to participate in our web application? Partially this is because of the onerous nature of designing password systems: there are a lot of edge cases to handle (password reset systems, avoiding automated credential generation, and password strength validation).
+
+Omniauth solves all of this for Rails developers. Omniauth simplifies login processes by allowing us to use single sign-on (SSO) providers like Google or Facebook to handle authentication for our application. Facebook and Google have many more people working and thinking about credential security than most web application developer teams, so I prefer to let them handle this hard part of web application development and let me focus on building the functionality of my app.  Using omniauth in your rails application means you ask a user to click a Facebook login button, and Facebook handles the authentication, and then provides a secure way to know this is the user they authenticated for us, plus gives us additional information about this user, like their email address and more if we ask Facebook for it. It is a double-win: we no longer need to worry about usernames and passwords, and we no longer have to manually collect information from the user the first time they sign up.
+
+Omniauth manages the entire lifecycle of an authentication request. Let's quickly summarize what that means technically.
+<ol>
+	<li>When a user clicks on a button saying "Login to Facebook" omniauth takes control.</li>
+	<li>Omniauth sends the user to the SSO provider, be it Facebook or Google or a whole host of others.</li>
+	<li>Facebook authenticates the user (effectively guarantees that "this is who I am").</li>
+	<li>Facebook redirects the user back to the web application from which the request originated.</li>
+	<li>Omniauth provides a mechanism within the web application to verify that the user is who they say they are, according to the SSO provider.</li>
+</ol>
+If this process makes your eyes bleed, don't worry! Omniauth handles all of it for you transparently. You simply add a few boilerplate files to your application and then put the login button into your application HTML templates. When a user clicks on the login button, those steps are handled all within omniauth. When the user returns to your application, you can simply look at who they are and proceed.
+
+In "<a title="Lesson 0: Creating a typical Rails application" href="http://slowgramming.com/angularjs-rails/lesson-0-creating-a-typical-rails-application/">Lesson 0</a>" we built the omniauth login process for our Rails application. Now, let's rip it out and use the JavaScript equivalent and wire it into AngularJS.
+
+Why should we do this? After all, authentication and Facebook graph information is working in the prior version of our Rails application. If it ain't broke, why fix it?
+<ol>
+	<li><span style="line-height: 1.714285714; font-size: 1rem;">Using a pure JavaScript login is <strong>initially faster</strong> for the user. </span><span style="font-size: 1rem; line-height: 1.714285714;">With omniauth, the user has to hit a path on our server (/auth/facebook), which omniauth intercepts and then sends a HTTP redirect to take the user to Facebook. Facebook handles the authentication, and then redirects the user back into our application. These multiple redirects are a linear chain link of actions. The "speed of the chain" will be gated by the slowest link, which will probably be our application. If we remove this chain and go directly into Facebook, even if our web application is on a slow server or is overloaded, the responsiveness will be better (unless Facebook itself is having problems). I trust Facebook uptime much more than I trust my own abilities around uptime. And, users notice HTTP redirects (which means the browser is being refreshed and the page cleared out) whereas they don't notice things happening in the background of a webpage using JavaScript. Your application looks and feels initially faster.</span></li>
+	<li>Using a pure JavaScript login is <strong>much less confusing</strong> for the user. If the user has clicked on several links into our application, and then decides to login, we have to coordinate with Facebook where exactly to return the user inside our application after login has completed. And, the multiple redirects mean the user's mind needs to adjust to the several "context switches" happening in front of their eyes. First, they are in your application, then they on the Facebook site, then they are back in your application. Imagine watching TV when someone is changing channels in between each scene of two shows. Even if you know the characters on both programs, your brain has to work extra hard to get you back into the plot line of each show after the channel is swapped. A pure JavaScript login is less fatiguing to the user.</li>
+	<li>Using a pure JavaScript login is <strong>comprehensively faster</strong> for the user. When you use a solution like omniauth, you typically then use the token provided by Facebook to retrieve data from their graph API. This can come in the form of friends, or other information about the user. If you are sending this request through your application, your application response time slows down the chain of these requests. When a user takes an action that requires interaction with the Facebook graph API, you are processing a request that could be sent securely right into Facebook.</li>
+</ol>
+So, how do we do this?
+
+First, we need to install the Facebook JavaScript SDK. Copy this into your templates. If you are following along through the github repository, the file can be found here: _fb_sdk.html.haml file.
+<pre><code class="js">&lt;div id="fb-root"&gt;&lt;/div&gt;
+&lt;script&gt;
+  window.fbAsyncInit = function() {
+    // init the FB JS SDK
+    FB.init({
+      appId      : 'YOUR_APP_ID', // App ID from the App Dashboard
+      channelUrl : '//WWW.YOUR_DOMAIN.COM/channel.html', // Channel File for x-domain communication
+      status     : true, // check the login status upon init?
+      cookie     : true, // set sessions cookies to allow your server to access the session?
+      xfbml      : true  // parse XFBML tags on this page?
+    });
+
+    // Additional initialization code such as adding Event Listeners goes here
+
+  };
+
+  // Load the SDK's source Asynchronously
+  // Note that the debug version is being actively developed and might 
+  // contain some type checks that are overly strict. 
+  // Please report such bugs using the bugs tool.
+  (function(d, debug){
+     var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement('script'); js.id = id; js.async = true;
+     js.src = "//connect.facebook.net/en_US/all" + (debug ? "/debug" : "") + ".js";
+     ref.parentNode.insertBefore(js, ref);
+   }(document, /*debug*/ false));
+&lt;/script&gt;
+</code></pre>
+&nbsp;

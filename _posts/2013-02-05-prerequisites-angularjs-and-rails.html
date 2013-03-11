@@ -1,0 +1,34 @@
+---
+layout: post
+title: Prerequisites for the AngularJS and Rails Tutorials
+tags:
+- angularjs-rails
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '1'
+---
+To play with these tutorials, you'll need Ruby and Rails installed.
+
+I use an Apple MacBook Pro and Linux (Ubuntu). If you use Windows, you'll probably need to use different instructions to install Ruby and Rails than those found here. But, if you run a Unix-y operating system like OSX or Linux, these instructions should get you started.
+
+Many operating systems come with Ruby pre-installed. This can be a good thing (it can save you time) and it can be a bad thing if the version is very outdated, and this is often the case with OS bundled versions of Ruby or Ruby gems.
+
+I highly recommend using RVM ("Ruby Version Manager") to install Ruby and to manage your dependent gems. RVM makes it possible to run and switch between multiple versions of Ruby on the same machine with ease (among other things). This means that even if your system Ruby is outdated, you can run the RVM version of Ruby easily and not have to go through the trouble of upgrading or troubleshooting it. You can find instructions on how to use RVM at the <a href="http://rvm.io">rvm.io</a> website. There is a great community of people associated with the website if you need assistance.
+
+It can be as simple as running this this line from within a terminal window (but you should read the instructions first to make sure...):
+<pre>curl -L https://get.rvm.io | bash -s stable --ruby</pre>
+Once you have Ruby installed, you can use this command to install Rails:
+<pre>gem install rails</pre>
+After that, you should have Ruby and Rails installed.
+
+If you are running a newer Apple computer, another handy utility is "pow" created by the inventors of the Ruby on Rails team. You can find more information on pow at the site <a href="http://pow.cx">pow.cx</a>. Pow makes it super simple to load a Rails application, especially when you are developing applications which require a dedicated domain name, for example, Facebook login web apps.
+
+If you do use pow, you'll probably want to use the companion utility "powder". You can install this with this command.
+<pre>gem install powder</pre>
+After you have installed pow and powder, enter into the directory for a rails application and run:
+<pre>powder link</pre>
+This will make your application available under the name &lt;application-name&gt;.dev. For example, if your rails app is in the directory "mynewapp" then entering into this directory and running "powder link" will make your application available at http://mynewapp.dev. Remember to append "http://" to the front of the URL because some browsers (like Chrome) will interpret this as a search instead of a site request because of the uncommon ".dev" domain name ending.
+
+Now you will need to choose an editor, which is the tool you'll use for writing code. This is a very political decision, and many friendships have been lost arguing over editors. I am an ancient developer (way past 23) and use Emacs, but I would not recommend that to a beginner. If you are just starting out, TextMate is a great editor if you are running on an Apple. If you are running on Windows, NetBeans is a good one. There are many options, and each has its benefits and drawbacks. If you know any other developers, asking them is a good first step. And, be prepared for some strong opinions!

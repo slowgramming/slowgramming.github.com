@@ -1,0 +1,321 @@
+---
+layout: post
+title: ! 'Lesson 0: Creating a typical Rails application'
+tags:
+- angularjs-rails
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '1'
+  cyberchimps_slider_image: ''
+  cyberchimps_slider_hidetitle: '1'
+  cyberchimps_slider_hidecaption: '1'
+---
+<p lang="en">Abul Ala was born in Maʿarra, Syria. He was a member of the <i>Banu Sulayman</i>, a notable family of Maʿarra, belonging to the larger Tanukh tribe. His paternal great-great-grandfather had been the city's first qadi. Some members of the <i>Bany Sulayman</i> had also been noted as good poets. He lost his eyesight at the age of four due to smallpox.<sup id="cite_ref-3">
+</sup></p>
+<p id="firstHeading" lang="en">Al-Maʿarri was a controversial rationalist of his time, attacking the dogmas of religion rejecting the claim that Islam or any other religion possessed the truths they claim and considered the speech of prophets as a lie (literally, "forge") and (some of it) "impossible" to be true. He was equally sarcastic towards the religions of Muslims, Jews, and Christians. He was also a vegan who argued for animal rights.</p>
+<p lang="en"><i>Soften your tread. Methinks the earth’s surface is but bodies of the dead,</i>
+<i>Walk slowly in the air, so you do not trample on the remains of God’s servants.</i></p>
+<!--more-->
+
+If you are very familiar with using Rails, you can probably skip this lesson. This section details how we might have setup a Rails application in the past. In later lessons we'll strip out much of the functionality and replace it with AngularJS components.
+
+Let's generate a simple Rails application. This application will be demonstrate the standard way of building a web app using Rails. Our application will help us manage a simple blog, with support for login via Facebook, and AJAX-y editing of the blog. We'll use Twitter bootstrap to provide a nice style on top of our blog and an easy way to build a layout.
+
+Please read the <a title="Prerequisites for the AngularJS and Rails Tutorials" href="http://slowgramming.com/angularjs-rails/prerequisites-angularjs-and-rails/">prerequisites section</a> if you don't have Ruby and/or Rails installed yet.
+
+This entire application is available on GitHub here: <a href="https://github.com/xrd/Slowgramming-Angular-Rails">https://github.com/xrd/Slowgramming-Angular-Rails</a>. You can compare your code to this if you find you have a mistake preventing you from proceeding. You'll notice links in this tutorial to the files as they appear within the GitHub repository, so you can verify your code with a guaranteed working version from the repository. There are two "branches" on the repository, one for the typical application, and another for the version after it has been converted to use AngularJS. Make sure you are on the "master" branch (which is the default).
+
+First, create a new Rails application. From a terminal window do this:
+<pre>rails new AngularRails 
+cd AngularRails</pre>
+Once you have completed those two steps, you'll want to start editing the files. Using your editor, open the <a href="https://github.com/xrd/Slowgramming-Angular-Rails/blob/master/Gemfile">Gemfile</a>, and add these lines to the end of it.
+<pre>gem 'omniauth'
+gem 'omniauth-facebook'
+gem 'kaminari'
+gem 'haml-rails'
+gem 'therubyracer'
+gem 'less-rails' 
+gem 'twitter-bootstrap-rails'</pre>
+Then, run the "bundle" command to install them. This might take a while as the system is installing any gems you don't have and loading them into the right place for your application to access.
+
+The gems we are using are:
+<ul>
+	<li>omniauth and omniauth-facebook: the gems to handle Facebook authentication</li>
+	<li>kaminari: a gem which handles paging, meaning breaking large sets of results into pages you can jump between for a cleaner navigation</li>
+	<li>haml-rails: a gem which allows you to write cleaner and more intuitive HTML code using a language called HAML.</li>
+	<li>therubyracer: a gem which assists with generation of JavaScript and CSS</li>
+	<li>less-rails: a gem which helps with Twitter Bootstrap (explained below)</li>
+	<li>twitter-bootstrap-rails: a gem which provides a set of tools to make your web pages prettier and more structures, based on the great work of some ex-Twitter developers.</li>
+</ul>
+Then, run this command to setup Twitter bootstrap inside your application, and the second command to setup kaminari.
+<pre>rails generate bootstrap:install less
+rails g kaminari:config</pre>
+Change the file <a href="https://github.com/xrd/Slowgramming-Angular-Rails/blob/master/config/initializers/kaminari_config.rb">config/initializers/kaminari_config.rb</a> so that the second line is uncommented (remove the "#" character from it) and change the 25 to a 10. It should look like this:
+<pre>Kaminari.configure do |config|
+  config.default_per_page = 10
+  # config.max_per_page = nil
+  ...</pre>
+Then, delete the public/index.html file, which is generated automatically in any new Rails application and will not be used. This file provides a home page which we'll replace in a few steps.
+
+We've installed all the gems and other components we'll need and are now ready to build our application.
+<h2>Omniauth</h2>
+Let's setup omniauth. Add this to a file called <a href="https://github.com/xrd/Slowgramming-Angular-Rails/blob/master/config/initializers/omniauth.rb">config/initializers/omniauth.rb</a>
+<pre>Rails.application.config.middleware.use OmniAuth::Builder do
+ provider :facebook, APP_CONFIG['FACEBOOK_APP_ID'], APP_CONFIG['FACEBOOK_APP_SECRET']
+end</pre>
+Then, add a file called <a href="https://github.com/xrd/Slowgramming-Angular-Rails/blob/master/config/initializers/app_config.rb">config/initializers/app_config.rb</a>
+<pre>require 'yaml'
+path = File.join(Rails.root, 'config', 'application.yml')
+
+if File.exists? path
+yaml_data = YAML::load(ERB.new(IO.read(path)).result)
+ APP_CONFIG = HashWithIndifferentAccess.new(yaml_data)
+end&lt;</pre>
+Then, add a file called <a href="https://github.com/xrd/Slowgramming-Angular-Rails/blob/master/config/application.yml.sample">config/application.yml</a> (this file is not in the GitHub repository because you never want to check in actual credentials to your repository, but this is a sample you can replace with your Facebook application credentials).
+<pre>FACEBOOK_APP_ID: 55555555555555555555555
+FACEBOOK_APP_SECRET: eeeeeeeeeeeeeeeeeeffffffffffffff</pre>
+You will want to replace the codes there with the codes from an actual Facebook application you will create.
+
+To create the Facebook application, go to <a href="https://developers.facebook.com/">https://developers.facebook.com/</a>. You may need to setup a developer account if you have not done so already. Click on the "Apps" tab at the top of the page.
+
+<a class="thumbnail" href="http://slowgramming.com/wp-content/uploads/2013/02/Screen-Shot-2013-02-06-at-3.08.36-PM.png"><img class="size-medium wp-image-77 alignleft" alt="Screen Shot 2013-02-06 at 3.08.36 PM" src="http://slowgramming.com/wp-content/uploads/2013/02/Screen-Shot-2013-02-06-at-3.08.36-PM-300x69.png" width="300" height="69" /></a>
+
+&nbsp;
+
+Find the button marked "Create New App" which probably will be found at the top right corner of the page.
+
+&nbsp;
+
+<a class="thumbnail" href="http://slowgramming.com/wp-content/uploads/2013/02/Screen-Shot-2013-02-06-at-3.13.16-PM.png"><img class="size-medium wp-image-79 alignright" alt="Screen Shot 2013-02-06 at 3.13.16 PM" src="http://slowgramming.com/wp-content/uploads/2013/02/Screen-Shot-2013-02-06-at-3.13.16-PM-300x128.png" width="300" height="128" /></a>
+
+&nbsp;
+
+You'll need this application to be uniquely named across all Facebook applications, so enter "XXX-AngularJS-Rails" (replacing XXX with your initials) into the "App Name" field and leave the rest blank and unchecked.
+
+<a class="thumbnail" href="http://slowgramming.com/wp-content/uploads/2013/02/Screen-Shot-2013-02-06-at-3.15.51-PM.png"><img class="size-medium wp-image-80 alignleft" alt="Screen Shot 2013-02-06 at 3.15.51 PM" src="http://slowgramming.com/wp-content/uploads/2013/02/Screen-Shot-2013-02-06-at-3.15.51-PM-300x101.png" width="300" height="101" /></a>
+
+You will probably need to enter in the proper captcha text to proceed on the next screen.
+
+Now, you'll see the application settings which you need to copy into the <a href="https://github.com/xrd/Slowgramming-Angular-Rails/blob/master/config/application.yml.sample">config/application.yml</a> file.
+
+Lastly, you'll need to enable the application as a target for login. At the bottom of the section, find the "Website with Facebook Login" button, and click this so it appears like this, and then enter in http://angularjsrails.dev.
+
+<a class="thumbnail" href="http://slowgramming.com/wp-content/uploads/2013/02/Screen-Shot-2013-02-06-at-3.20.16-PM.png"><img class="size-medium wp-image-82 alignright" alt="Screen Shot 2013-02-06 at 3.20.16 PM" src="http://slowgramming.com/wp-content/uploads/2013/02/Screen-Shot-2013-02-06-at-3.20.16-PM-300x61.png" width="300" height="61" /></a>
+
+&nbsp;
+
+Then click the "Save Changes" button to save your changes.
+
+Now that you have added the Facebook application and changed the config/application.yml file, you need to tell Rails to reload itself. The easiest way to do this (if you are using pow) is to type this command within a terminal window when you are in the directory where your application resides.
+<pre>touch tmp/restart.txt</pre>
+The touch command just modifies the timestamp of a file, which tells pow to reload the application entirely, including the configuration files, which are not normally reloaded each time to save time. This is a good last resort to try if something is not working with your rails application when you experience strange errors and are sure you are doing something correctly.
+
+Your application is now setup to use Facebook authentication with Omniauth. Let's put a link to login via Facebok into our application.
+
+Add this to your <a href="https://github.com/xrd/Slowgramming-Angular-Rails/blob/master/config/routes.rb">config/routes.rb</a> file.
+<pre>root :to =&gt; 'welcome#index'</pre>
+Add this to a file called app/controllers/welcome_controller.rb
+<pre>class WelcomeController &lt; ApplicationController
+ def index
+ end 
+end</pre>
+Then, create a directory called "welcome" inside the app/views directory, and add a file with these contents to <a href="https://github.com/xrd/Slowgramming-Angular-Rails/blob/master/app/views/welcome/index.html.haml">app/views/welcome/index.html.haml</a> with this little snippet.
+<pre>%h1 Hello from AngularJS and Rails.</pre>
+And, add this file to <a href="https://github.com/xrd/Slowgramming-Angular-Rails/blob/master/public/login.html">public/login.html</a>
+<pre>&lt;html&gt;&lt;body&gt;
+&lt;a href="/auth/facebook"&gt;Login via Facebook&lt;/a&gt;
+&lt;/body&gt;&lt;/html&gt;</pre>
+There are still some steps to finalize Facebook login, but if you go to angularjsrails.dev/auth/facebook you should be redirected to Facebook. You should see something like this:
+
+<a class="thumbnail" href="http://slowgramming.com/wp-content/uploads/2013/02/Screen-Shot-2013-02-06-at-3.29.25-PM.png"><img class="size-medium wp-image-85 alignleft" alt="Screen Shot 2013-02-06 at 3.29.25 PM" src="http://slowgramming.com/wp-content/uploads/2013/02/Screen-Shot-2013-02-06-at-3.29.25-PM-300x147.png" width="300" height="147" /></a>
+
+&nbsp;
+
+If you click "Go to App" you'll get an error because we have not done anything with the response yet. We'll do that now.
+
+Once omniauth completes its work with Facebook, it redirects back to a similar path on the application with "callback" appended. So, the route /auth/facebook returns to your app with /auth/facebook/callback. We need to setup a route to handle this request and then build a controller that can use this.
+
+Add these lines to the top of your <a href="https://github.com/xrd/Slowgramming-Angular-Rails/blob/master/config/routes.rb">config/routes.rb</a> file
+<pre>  match '/auth/:provider/callback', to: 'authentication#create'
+  match '/auth/failure', to: 'authentication#failure'</pre>
+Then, add this file to <a href="https://github.com/xrd/Slowgramming-Angular-Rails/blob/2e71c0f3941da70158435e6924ac68a17eba497f/app/controllers/authentication_controller.rb">app/controllers/authentication_controller.rb</a>
+<pre>class AuthenticationController &lt; ApplicationController
+def failure
+ if Rails.env.development?
+ raise request.inspect.to_yaml
+ else
+ render text: "Invalid login"
+ end
+ end
+def create
+ omniauth = request.env['omniauth.auth']
+ raise omniauth.to_yaml
+ end&lt;
+end</pre>
+Now, hitting http://angularjsrails.dev/auth/facebook should go to Facebook, then redirect you back to your application. Omniauth will (behind the scenes) validate the response redirect from Facebook and then provide your application with the validated credentials. If everything is working correctly, you see this:
+
+<a class="thumbnail" href="http://slowgramming.com/wp-content/uploads/2013/02/Screen-Shot-2013-02-06-at-4.23.55-PM.png"><img class="size-medium wp-image-87 alignright" alt="Screen Shot 2013-02-06 at 4.23.55 PM" src="http://slowgramming.com/wp-content/uploads/2013/02/Screen-Shot-2013-02-06-at-4.23.55-PM-300x64.png" width="300" height="64" /></a>
+
+&nbsp;
+
+This is an error, but one that we "raised" in the "create" method of our AuthenticationController, meaning that we expected this error. Now, let's use the credentials.
+
+Run this command from your terminal window.
+<pre>rails generate scaffold User name:string uid:string provider:string email:string</pre>
+This command generates our User model. This command is a shortcut to generate the code, create a database migration to add this to the database, and a whole bunch of other handy code. I generally like to hand code each thing I'll need, but this is a quick way to provide an example of what we need.
+
+Migrate the database using this command:
+<pre>rake db:migrate</pre>
+Then, modify your <a href="https://github.com/xrd/Slowgramming-Angular-Rails/blob/d62e450a5d062d27e599604018f185d10090d997/app/controllers/authentication_controller.rb">app/controllers/authentication_controller.rb</a> file so that the create method looks like this:
+<pre>def create
+ omniauth = request.env['omniauth.auth']
+ u = User.find_or_create_by_email_and_uid( omniauth["info"]["email"], omniauth["uid"] ) do |u|
+   u.name = omniauth["info"]["name"]
+   u.provider = omniauth["provider"]
+ end
+ if u
+   session[:user_id] = u.id
+ end
+ redirect_to root_path 
+end</pre>
+This code will take the information provided from Omniauth (originally from Facebook) and stick it into the database. Now, if you hit the login link you should  see this:
+
+<a class="thumbnail" href="http://slowgramming.com/wp-content/uploads/2013/02/Screen-Shot-2013-02-06-at-4.42.16-PM.png"><img class="size-medium wp-image-88 alignright" alt="Screen Shot 2013-02-06 at 4.42.16 PM" src="http://slowgramming.com/wp-content/uploads/2013/02/Screen-Shot-2013-02-06-at-4.42.16-PM-300x73.png" width="300" height="73" /></a>
+
+&nbsp;
+
+You've logged in. And, stored the crendentials in the database and in the session cookie. If you close the browser window and reopen it you'll see that you are not redirected to the login page (meaning our login is saved to the browser). And, we can access your information and display it on our page by changing the <a href="https://github.com/xrd/Slowgramming-Angular-Rails/blob/214962e3c8bcf14395ed290f9621b18a8c7d46f8/app/views/welcome/index.html.haml">app/views/welcome/index.html.haml</a> file to this:
+<pre>%h1 Hello from AngularJS and Rails.
+== Welcome #{@current_user.name}</pre>
+This is our first example of HAML. This code creates a tag &lt;h1&gt; wrapped around the "Hello from AngularJS and Rails" and also "interpolates" the variable "@current_user.name" and puts the value into our template. Now after reloading the page you see this:
+
+<a class="thumbnail" href="http://slowgramming.com/wp-content/uploads/2013/02/Screen-Shot-2013-02-06-at-4.50.53-PM.png"><img class="size-medium wp-image-90 alignright" alt="Screen Shot 2013-02-06 at 4.50.53 PM" src="http://slowgramming.com/wp-content/uploads/2013/02/Screen-Shot-2013-02-06-at-4.50.53-PM-300x103.png" width="300" height="103" /></a>
+
+This completes the omniauth section of the tutorial.
+<h2>Building a simple blog</h2>
+Let's now build our blog. We'll build a blogging tool that keeps blog post and revisions, and then allow us to review the revisions and blog posts.
+
+Run these commands:
+<pre>rails generate scaffold Post name:string user_id:integer
+rails generate scaffold Revision body:text post_id:integer user_id:integer
+rake db:migrate
+echo "gem 'faker', group: :development" &gt;&gt; Gemfile
+bundle</pre>
+This will generate our posts and revisions models and add the faker gem (which can be used to generate fake data for us to play with).
+
+Add this file <a href="https://github.com/xrd/Slowgramming-Angular-Rails/blob/7b43348179a4479bacddfe3f713e059df155670b/lib/tasks/fake.rake">lib/tasks/fake.rake</a> to generate some fake data to play with:
+<pre>namespace :angularrails do
+ desc "Build fake data"
+ task :fakeit =&gt; :environment do
+ User.all.each do |u|
+ 100.times do
+ p = u.posts.create name: Faker::Lorem.sentence
+ (rand()*10).to_i.times do
+ p.revisions.create body: Faker::Lorem.paragraph
+ end
+ end
+ end
+ end
+end</pre>
+Then, run the command to generate the fake data
+<pre>rake angularrails:fakeit</pre>
+Edit the file <a href="https://github.com/xrd/Slowgramming-Angular-Rails/blob/929c49017a3b1b163149d0988d32e6d8240746bf/app/views/welcome/index.html.haml">app/views/welcome/index.html.haml</a> to look like this:
+<pre>.container
+  .row
+    .span12
+      %h1 Hello from AngularJS and Rails.
+      == Welcome #{@current_user.name}
+
+  .row
+    .span6
+      .title Posts
+      .posts
+        - @posts.each do |p|
+          .post.alert
+            = p.name
+            .small.muted== Created at #{p.created_at}
+      = paginate @posts
+
+    .span6
+      .title
+        Revisions for
+        .label= @first_post.name
+      .revisions
+        - @first_post.revisions.each do |r|
+          .revision.alert-block
+            = r.body
+            .small.muted== Modification at #{r.created_at}</pre>
+This snippet of HAML code (remember HAML is a cleaner way to generate HTML code) does several things. First, we create a container around the entire output. This is a convention of the twitter bootstrap tool we added as a gem earlier. You will see it nicely centers and provides clean dimensions for our blog entries. Then we create two rows, one for the title, and one for the posts and revisions. Inside each row we use a tag called spanX, where X is either 12 or 6. Twitter bootstrap uses a grid divided into 12 sections, so the first row uses the entire section, and the second row divides the space between two columns, one which has the posts and a pager, and another column which has the revisions for the first post.
+
+We need to also change the controller code, so edit the file <a href="https://github.com/xrd/Slowgramming-Angular-Rails/blob/5dd299ab374f06b04fce064429576274e39190ee/app/controllers/welcome_controller.rb">app/controllers/welcome_controller.rb</a> to look like this:
+<pre>class WelcomeController &lt; ApplicationController
+  def index
+    @posts = @current_user.posts.order(:name).page params[:page]
+    @first_post = @posts.first                        
+  end
+end</pre>
+This code uses the kaminari gem to page our posts for us. We also store the first post into a variable called @first_post. You can see those variables being used inside the index.html.haml file above.
+
+If you reload the page, you'll see something similar to this. It won't match exactly because the content is generated from the faker gem and this generates fake and unique data differently each time.
+<p style="text-align: center;"><a class="thumbnail" href="http://slowgramming.com/wp-content/uploads/2013/02/Screen-Shot-2013-02-07-at-7.34.15-PM.png"><img class="size-medium wp-image-106 aligncenter" alt="Screen Shot 2013-02-07 at 7.34.15 PM" src="http://slowgramming.com/wp-content/uploads/2013/02/Screen-Shot-2013-02-07-at-7.34.15-PM-300x208.png" width="300" height="208" /></a></p>
+You can jump around and see different pages by clicking on the pager links at the bottom of the post section. The right column displays the "revisions" for the first post displayed in the page on the left.
+
+We've now completed the first version of our Rails application. Now, let's add some dynamic AJAX functionality. If you don't know, AJAX stands for "Asynchronous JavaScript and XML" and allows a browser to provide a more dynamic and responsive interface. Fortunately, we don't need to know anything about XML to use these tools, even though the name might imply it!
+<h2>AJAX Display and Editing</h2>
+We've built a fake set of data to show what our application will look like. Now, let's add the ability to add new posts, edit posts and keep revisions available.
+
+Fortunately, by using Rails and Twitter bootstrap in our application, we have a bunch of components available to us for building dynamic AJAX applications.
+
+First, let's make it so that when we click on any of the posts, we load the revisions into the right column. This will require adding some JavaScript and some changes to a controller and our routes.rb file.
+
+Change the <a href="https://github.com/xrd/Slowgramming-Angular-Rails/blob/d3872d2c7ee45e6318d372ba3215d3714338b419/config/routes.rb">config/routes.rb</a> file so that the first few lines look like this. The change is in red:
+<pre>AngularRails::Application.routes.draw do
+
+  resources :revisions
+  <span style="color: #ff0000;">resources :posts do                       
+    resources :revisions
+  end</span>
+  ...</pre>
+This line adds a "posts" resources, which means it adds routes (URL paths) into our application which are connected to our posts controller. The routes are there, and we can see them by running this command which shows the routes (and filters out anything but those which contain the strong "posts"):
+<pre>$ rake routes | grep posts
+ post_revisions GET /posts/:post_id/revisions(.:format) revisions#index
+ POST /posts/:post_id/revisions(.:format) revisions#create
+ new_post_revision GET /posts/:post_id/revisions/new(.:format) revisions#new
+edit_post_revision GET /posts/:post_id/revisions/:id/edit(.:format) revisions#edit
+ post_revision GET /posts/:post_id/revisions/:id(.:format) revisions#show
+ PUT /posts/:post_id/revisions/:id(.:format) revisions#update
+ DELETE /posts/:post_id/revisions/:id(.:format) revisions#destroy
+ posts GET /posts(.:format) posts#index
+ POST /posts(.:format) posts#create
+ new_post GET /posts/new(.:format) posts#new
+ edit_post GET /posts/:id/edit(.:format) posts#edit
+ post GET /posts/:id(.:format) posts#show
+ PUT /posts/:id(.:format) posts#update
+ DELETE /posts/:id(.:format) posts#destroy</pre>
+Now change the app/controllers/revisions_controller.rb file (this was automatically created with one of the "rails g" commands we ran earlier) so that the fifth line looks like this. The change is in red.
+<pre>class RevisionsController &lt; ApplicationController
+  # GET /revisions  
+  # GET /revisions.json   
+  def index
+    <span style="color: #ff0000;">@revisions = params[:post_id] ? @current_user.posts.find( params[:post_id] ).revisions : Revision.all</span>                             respond_to do |format|
+    ...</pre>
+Now, add these lines to the file app/assets/javascripts/revisions.js.coffee (which was also automatically generated earlier).
+<pre>loadRevisions = (event) -&gt;
+	# Get the post, in case out click is inside it                                                                                                     
+	post = $(event.target)
+	unless post.attr( 'class' ) == 'post'
+		console.log "Jumping up to find post"
+		post = $(event.target).parents('.post')
+	post_id = post.attr('post_id')
+	$.getJSON "posts/#{post_id}/revisions", (data, success) -&gt;
+		stuff = ""
+		for item in data
+			stuff += "&lt;div class='revision alert-block'&gt;#{item.body}&lt;div class='small muted'&gt;Modification at #{item.created_at}&lt;/div&gt;&lt;/div&gt;"
+		$('.revisions').html( stuff )
+		$('.revision_title').html( "Revisions for " + $(event.target).find('.name').html() )
+
+$ -&gt;
+    	$('.posts .post').click loadRevisions</pre>
+OK.

@@ -1,0 +1,19 @@
+---
+layout: post
+title: ! 'Lesson 5: Caveats'
+tags: []
+status: draft
+type: post
+published: false
+meta:
+  _edit_last: '1'
+---
+Things to watch out for. These are things specific to Rails which can bite you when you are using AngularJS.
+<ul>
+	<li><span style="line-height: 13px;">Errors in scripts in development will cause everything to break in production.</span></li>
+	<li></li>
+	<li>Using CoffeeScript classes. Don't do this.</li>
+	<li>Using old style injection. This will not work.</li>
+	<li>If you are not running on Heroku, don't forget to compile your assets.</li>
+	<li>Ordering of assets. Make sure angular.js comes before others. You can consider creating directories where you can put "boot" scripts (like 001_boot, and 002_user) where boot scripts are loaded completely and then your controller modules are loaded.</li>
+</ul>
